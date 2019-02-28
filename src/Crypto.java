@@ -1,4 +1,5 @@
 
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -9,6 +10,9 @@ public class Crypto {
             if (args[1].equals("in")) {
                 byte[] encoded = Files.readAllBytes(Paths.get(args[2]));
                 System.out.println(Arrays.toString(encoded));
+                //Affichage binaire
+                BigInteger bi = new BigInteger(encoded);
+                System.out.println("Data 1 : " + bi.toString(2) + " \n Nombre de bits : " + bi.toString(2).getBytes().length);
             }
         }
     }
