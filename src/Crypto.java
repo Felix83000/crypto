@@ -7,10 +7,10 @@ import java.util.Arrays;
 
 public class Crypto {
     public static void main(final String[] args) throws Exception {
-        if (args.length == 7) {
-            for (int i = 0; i < args.length; i++) {
-                System.out.println("args " + i + " : " + args[i]);
-            }
+        //Vérification des paramètres
+        boolean clear = isClear(args);
+
+        if (clear) {
             byte[] cipher = {0};
             byte[] encoded = Files.readAllBytes(Paths.get(args[2]));
             System.out.println(Arrays.toString(encoded));
@@ -21,25 +21,15 @@ public class Crypto {
 
             EnDeCryption cryption = new EnDeCryption();
 
-            if (args[5].equals("pass")) {
-                switch (args[0]) {
-                    case "enc":
-                        cipher = cryption.encryption(encoded, args[6]);
-                        break;
-                    case "dec":
-                        cipher = cryption.decryption(encoded, args[6]);
-                        break;
-                }
-            } else {
-                switch (args[0]) {
-                    case "enc":
-                        cipher = cryption.encryption(encoded, "default_pass");
-                        break;
-                    case "dec":
-                        cipher = cryption.decryption(encoded, "default_pass");
-                        break;
-                }
+            switch (args[0]) {
+                case "enc":
+                    cipher = cryption.encryption(encoded, args[6]);
+                    break;
+                case "dec":
+                    cipher = cryption.decryption(encoded, args[6]);
+                    break;
             }
+
             System.out.println("main call result : " + Arrays.toString(cipher));
 
 
@@ -54,7 +44,16 @@ public class Crypto {
                 fos.write(cipher);
             }
         } else {
-            System.out.println("\n\nVeuillez utiliser cette application avec 4 arguments : –enc|-dec –in <input file> -out <output file> -pass <password>");
+            System.out.println("\n\nVeuillez utiliser ce pattern d'arguments : –enc|-dec –in <input file> -out <output file> -pass <password>");
         }
+    }
+
+    private static boolean isClear(String[] args) {
+        String[] arguments = {"in", "out", "pass", "dec", "enc"};
+        return (arguments[3].equals(args[0]) || arguments[4].equals(args[0]))
+                && arguments[0].equals(args[1])
+                && arguments[1].equals(args[3])
+                && arguments[2].equals(args[5])
+                && args.length == 7;
     }
 }
