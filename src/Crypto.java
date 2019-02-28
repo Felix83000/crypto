@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 public class Crypto {
     public static void main(final String[] args) throws Exception {
-        if (args.length >= 5) {
+        if (args.length == 7) {
             for (int i = 0; i < args.length; i++) {
                 System.out.println("args " + i + " : " + args[i]);
             }
@@ -54,7 +54,7 @@ public class Crypto {
                 fos.write(cipher);
             }
         } else {
-            System.out.println("Veuillez utiliser cette application avec minimum 3 arguments : –enc|-dec –in <input file> -out <output file> (-pass <password>)");
+            System.out.println("\n\nVeuillez utiliser cette application avec 4 arguments : –enc|-dec –in <input file> -out <output file> -pass <password>");
         }
     }
 }
