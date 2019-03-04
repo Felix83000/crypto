@@ -8,14 +8,19 @@ import java.security.spec.KeySpec;
 
 
 public class EnDeCryption {
+    private String password;
 
-    public byte[] encryption(byte[] data, String password) {
+    public EnDeCryption(String password){
+        this.password = password;
+    }
+
+    public byte[] encryption(byte[] data){
         try {
             Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
 
-            Key key = generateKey(password);
+            Key key = generateKey(this.password);
 
-            System.out.println("key : " + key);
+            //System.out.println("key : "+key);
             cipher.init(Cipher.ENCRYPT_MODE, key);
 
             byte[] plainBloc = new byte[16];
@@ -66,15 +71,15 @@ public class EnDeCryption {
             byte[] result = new byte[cipher_data.length + rest.length];
             System.arraycopy(cipher_data, 0, result, 0, cipher_data.length);
             System.arraycopy(rest, 0, result, cipher_data.length, rest.length);
-
+            /*
             System.out.println();
             System.out.println("cipher data : "+Arrays.toString(cipher_data));
             System.out.println("rest : "+Arrays.toString(rest));
             System.out.println("result : "+Arrays.toString(result));
-            System.out.println();*/
-
-            return cipherText;
-        } catch (Exception ex) {
+            System.out.println();
+*/
+            return result;
+        } catch (Exception ex){
             ex.printStackTrace();
         }
         return null;
@@ -95,7 +100,7 @@ public class EnDeCryption {
 
             Key key = generateKey(password);
 
-            System.out.println("key : " + key);
+            //System.out.println("key : "+key);
             cipher.init(Cipher.DECRYPT_MODE, key);
 
 
@@ -131,6 +136,7 @@ public class EnDeCryption {
            /* byte[] plain_data = cipher.update(data);
             byte[] rest = cipher.doFinal();
             byte[] result = new byte[plain_data.length + rest.length];
+
             System.arraycopy(plain_data, 0, result, 0, plain_data.length);
             System.arraycopy(rest, 0, result, plain_data.length, rest.length);*/
 
