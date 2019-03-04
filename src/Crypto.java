@@ -32,10 +32,6 @@ public class Crypto {
 
             System.out.println("main call result : " + Arrays.toString(cipher));
 
-
-            cipher = cryption.decryption(cipher, args[6]);
-
-
             //Affichage binaire
             BigInteger bi1 = new BigInteger(cipher);
             System.out.println("Data cypher : " + bi.toString(2) + " \n Nombre de bits : " + bi1.toString(2).getBytes().length);

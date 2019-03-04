@@ -47,16 +47,16 @@ public class EnDeCryption {
                 System.arraycopy(cipherBloc, 0, cipherText, i, 16);
             }
 
-            // CTS
+            /*// CTS
             // https://fr.wikipedia.org/wiki/Mode_d%27op%C3%A9ration_(cryptographie)#Chiffrement_avec_vol_de_texte_:_%C2%AB_CipherText_Stealing_%C2%BB_(CTS)
             // Avant dernier bloc
-            /*System.arraycopy(data, (data.length / 16) , lastBloc, 0, 16);
+            System.arraycopy(data, (data.length / 16) , lastBloc, 0, 16);
             System.arraycopy(data, (data.length / 16) + 16, tmpBloc, 0, data.length % 16);
             for (int j = data.length % 16; j < tmpBloc.length; j++) {
                 lastBloc[j] = 0x0;
             }
-            finalBloc = cipher.update(xor(lastBloc, cipherBloc));
-            b = cipher.update(xor(tmpBloc, finalBloc));
+            System.arraycopy(cipher.update(xor(lastBloc, cipherBloc)),0,finalBloc,0,16);
+            System.arraycopy(cipher.update(xor(tmpBloc, finalBloc)),0,b,0,16);
 
             System.arraycopy(b, 0, cipherText, (data.length / 16), 16);
             System.arraycopy(finalBloc, 0, cipherText, (data.length - data.length % 16), data.length % 16);*/
