@@ -14,10 +14,7 @@ public class Crypto {
 
     public enum action {ENC, DEC}
 
-    public enum mode {ZIP, FILES, DIRECTORY}
-
     static action Action;
-    static mode outputMode;
     static ArrayList<String> inputFiles = new ArrayList<String>();
     static HashMap<String, byte[]> encodedMap = new HashMap<String, byte[]>();
     static HashMap<String, byte[]> outputFileEnc = new HashMap<String, byte[]>();
@@ -29,27 +26,28 @@ public class Crypto {
         boolean isArgsValidate = validateArgs(args);
         if (isArgsValidate && checkInputFile(inputFiles)) {
 
-
+            //Parcours tous les fichiers d'entree
             for (int i = 0; i < inputFiles.size(); i++) {
                 File file = new File(inputFiles.get(i));
                 String extension = getExtension(inputFiles.get(i));
-                System.out.println("extension input : " + extension);
+
+                //Pour un zip
                 if (extension.equals("zip")) {
-                    System.out.println("It is a ZIP");
                     unzip(file.getPath().toString());
                 } else if (extension.equals("")) {
 
                 } else {
-                    System.out.println("It is a File");
                     byte[] encoded = Files.readAllBytes(Paths.get(inputFiles.get(i)));
                     encodedMap.put(inputFiles.get(i), encoded);
                 }
 
             }
 
+            //Realise le traitement
             doEnDeCryption();
-            System.out.println("number output files : " + outputFileEnc.size() + " / files :" + outputFileEnc);
 
+
+            //Range les fichiers de sortie
             if (checkOutputFile(outputFilePath)) {
                 if (getExtension(outputFilePath).equals("zip")) {
                     FileOutputStream fos = new FileOutputStream(outputFilePath);
@@ -76,7 +74,6 @@ public class Crypto {
                     File dir = new File(outputFilePath);
                     if (!dir.exists()) dir.mkdirs();
                     outputFileEnc.forEach((path, cipher) -> {
-                        System.out.println("path : " + path);
                         try (FileOutputStream fos = new FileOutputStream(outputFilePath + File.separator + path)) {
                             System.out.println("Write to file : " + outputFilePath + File.separator + path);
 
@@ -143,10 +140,9 @@ public class Crypto {
     }
 
 
-    private static boolean doEnDeCryption() {
+    private static void doEnDeCryption() {
         encodedMap.forEach((path, encoded) -> {
                     EnDeCryption cryption = new EnDeCryption(password);
-
 
                     byte[] cipher = {0};
                     switch (Action) {
@@ -158,31 +154,26 @@ public class Crypto {
                                 path_out = path;
                             }
                             cipher = cryption.encryption(encoded, path_out);
-                            System.out.println("Size : " + encodedMap.size() + " // Path salt : " + path_out);
                             break;
                         case DEC:
                             cipher = cryption.decryption(encoded, path);
                             break;
                     }
-
                     outputFileEnc.put(path, cipher);
                 }
         );
-        return true;
     }
 
 
     private static boolean checkInputFile(ArrayList<String> inputFiles) {
-
-        for (int i = 0; i < inputFiles.size(); i++) {
-            File file = new File(inputFiles.get(i));
+        for (String inputFile : inputFiles) {
+            File file = new File(inputFile);
             if (!file.isDirectory()) {
                 if (!file.exists()) {
-                    System.out.println("File : " + inputFiles.get(i) + " doesn't exist !");
+                    System.out.println("File : " + inputFile + " doesn't exist !");
                     return false;
                 }
             }
-
         }
         return true;
     }
@@ -195,26 +186,21 @@ public class Crypto {
             Scanner input = new Scanner(System.in);
             String answer = input.nextLine();
             if (answer.equals("") || answer.equals("y") || answer.equals("Y")) {
-                System.out.println("overwrite");
                 return true;
             } else {
-                System.out.println("don't overwrite");
                 return false;
             }
         }
-        System.out.println("don't existe");
         return true;
     }
 
     private static boolean validateArgs(String[] args) {
-        String[] arguments = {"-in", "-out", "-pass", "-dec", "-enc"};
         if ((Arrays.asList(args).contains("-enc") || Arrays.asList(args).contains("-dec"))
                 && Arrays.asList(args).contains("-pass")
                 && Arrays.asList(args).contains("-in")
                 && Arrays.asList(args).contains("-out")) {
 
             for (int i = 0; i < args.length; i++) {
-                System.out.println(args[i]);
                 if (args[i].charAt(0) == '-') {
                     switch (args[i]) {
                         case "-enc":
@@ -224,7 +210,6 @@ public class Crypto {
                             Action = action.DEC;
                         case "-in":
                             int index = i + 1;
-                            System.out.println(args[index]);
                             while (args[index].charAt(0) != '-') {
                                 inputFiles.add(args[index]);
                                 index = index + 1;
@@ -239,26 +224,20 @@ public class Crypto {
                     }
                 }
             }
-            System.out.println(Action);
-            System.out.println(inputFiles.toString());
-            System.out.println(outputFilePath);
-            System.out.println(password);
             if (inputFiles.size() == 0) {
                 System.out.println("No input file in parrameter");
                 return false;
             } else {
                 String extension = getExtension(outputFilePath);
-                System.out.println(extension);
                 if (inputFiles.size() > 1) {
                     if (!extension.equals("zip") && !extension.equals("") && Action == action.ENC) {
                         System.out.println("File's extension have to be 'zip' for multiple files!");
                         return false;
-                    } else if (!extension.equals("")) {
-
                     }
                 }
             }
-            return true;
+
+            return validatePassword(password);
         } else {
             return false;
         }
@@ -276,18 +255,13 @@ public class Crypto {
     }
 
     private static boolean validatePassword(String password) {
-        return password.matches("[a-zA-Z0-9]+");
-
-        /*
-        62^x = 2^128
-         */
-        /*
-        EnDeCryption cyption = new EnDeCryption();
-        Key key = cyption.generateKey(password);
-        System.out.println(Arrays.toString(key.getEncoded()));
-
-        BigInteger bi = new BigInteger(key.getEncoded());
-        System.out.println("Data plain : " + bi.toString(2) + " \n Nombre de bits : " + bi.toString(2).getBytes().length);
-*/
+        // 62^x = 2^128
+        if (password.matches("[a-zA-Z0-9]+") && password.length() >= 22) {
+            return true;
+        } else {
+            System.out.println("Your password is not valid");
+            return false;
+        }
     }
+
 }

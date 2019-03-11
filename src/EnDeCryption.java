@@ -26,10 +26,6 @@ public class EnDeCryption {
             byte[] plainBloc = new byte[16];
             byte[] cipherBloc = new byte[16];
             byte[] cipherText = new byte[data.length];
-            byte[] lastBloc = new byte[16];
-            byte[] tmpBloc = new byte[16];
-            byte[] finalBloc = new byte[16];
-            byte[] b = new byte[16];
 
             // CBC
             // https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher_Block_Chaining_(CBC)
@@ -52,7 +48,12 @@ public class EnDeCryption {
                 System.arraycopy(cipherBloc, 0, cipherText, i, 16);
             }
 
-            /*// CTS
+            /*
+            byte[] lastBloc = new byte[16];
+            byte[] tmpBloc = new byte[16];
+            byte[] finalBloc = new byte[16];
+            byte[] b = new byte[16];
+            // CTS
             // https://fr.wikipedia.org/wiki/Mode_d%27op%C3%A9ration_(cryptographie)#Chiffrement_avec_vol_de_texte_:_%C2%AB_CipherText_Stealing_%C2%BB_(CTS)
             // Avant dernier bloc
             System.arraycopy(data, (data.length / 16) , lastBloc, 0, 16);
@@ -64,20 +65,17 @@ public class EnDeCryption {
             System.arraycopy(cipher.update(xor(tmpBloc, finalBloc)),0,b,0,16);
 
             System.arraycopy(b, 0, cipherText, (data.length / 16), 16);
-            System.arraycopy(finalBloc, 0, cipherText, (data.length - data.length % 16), data.length % 16);*/
+            System.arraycopy(finalBloc, 0, cipherText, (data.length - data.length % 16), data.length % 16);
+            */
 
-            /*byte[] cipher_data = cipher.update(data);
+            /* Façon conventionnel
+            byte[] cipher_data = cipher.update(data);
             byte[] rest = cipher.doFinal();
             byte[] result = new byte[cipher_data.length + rest.length];
             System.arraycopy(cipher_data, 0, result, 0, cipher_data.length);
             System.arraycopy(rest, 0, result, cipher_data.length, rest.length);
-            /*
-            System.out.println();
-            System.out.println("cipher data : "+Arrays.toString(cipher_data));
-            System.out.println("rest : "+Arrays.toString(rest));
-            System.out.println("result : "+Arrays.toString(result));
-            System.out.println();
-*/
+            */
+
             return cipherText;
         } catch (Exception ex){
             ex.printStackTrace();
@@ -85,7 +83,7 @@ public class EnDeCryption {
         return null;
     }
 
-    public byte[] xor(byte[] tab1, byte[] tab2) {
+    private byte[] xor(byte[] tab1, byte[] tab2) {
         byte[] result = new byte[tab1.length];
 
         for (int i = 0; i < tab1.length; i++) {
@@ -99,7 +97,7 @@ public class EnDeCryption {
             Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
 
             Key key = generateKey(this.password, name);
-            //System.out.println("key : "+key);
+
             cipher.init(Cipher.DECRYPT_MODE, key);
 
 
@@ -108,7 +106,7 @@ public class EnDeCryption {
             byte[] plainText = new byte[data.length];
             byte[] plainBloc = new byte[16];
 
-            // Chiffre par bloc de 16 octets
+            // CBC
             for (int i = 0; i < data.length-1; i += 16) {
                 // Si ce n'est pas la première étape
                 if (i == 0) {
@@ -132,12 +130,13 @@ public class EnDeCryption {
                 System.arraycopy(plainBloc, 0, plainText, i, 16);
             }
 
-           /* byte[] plain_data = cipher.update(data);
+           /* Façon conventionnel
+            byte[] plain_data = cipher.update(data);
             byte[] rest = cipher.doFinal();
             byte[] result = new byte[plain_data.length + rest.length];
-
             System.arraycopy(plain_data, 0, result, 0, plain_data.length);
-            System.arraycopy(rest, 0, result, plain_data.length, rest.length);*/
+            System.arraycopy(rest, 0, result, plain_data.length, rest.length);
+            */
 
             return plainText;
         } catch (Exception ex) {
