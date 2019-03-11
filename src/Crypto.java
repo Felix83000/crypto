@@ -76,9 +76,9 @@ public class Crypto {
                     File dir = new File(outputFilePath);
                     if (!dir.exists()) dir.mkdirs();
                     outputFileEnc.forEach((path, cipher) -> {
-                        System.out.println("path : " +path);
-                        try (FileOutputStream fos = new FileOutputStream(outputFilePath+File.separator+path)) {
-                            System.out.println("Write to file : " + outputFilePath+File.separator+path);
+                        System.out.println("path : " + path);
+                        try (FileOutputStream fos = new FileOutputStream(outputFilePath + File.separator + path)) {
+                            System.out.println("Write to file : " + outputFilePath + File.separator + path);
 
                             try {
                                 fos.write(cipher);
@@ -86,7 +86,7 @@ public class Crypto {
                                 ex.printStackTrace();
                             }
 
-                        }catch (Exception ex){
+                        } catch (Exception ex) {
                             ex.printStackTrace();
                         }
                     });
@@ -147,13 +147,21 @@ public class Crypto {
         encodedMap.forEach((path, encoded) -> {
                     EnDeCryption cryption = new EnDeCryption(password);
 
+
                     byte[] cipher = {0};
                     switch (Action) {
                         case ENC:
-                            cipher = cryption.encryption(encoded);
+                            String path_out;
+                            if (encodedMap.size() == 1) {
+                                path_out = outputFilePath;
+                            } else {
+                                path_out = path;
+                            }
+                            cipher = cryption.encryption(encoded, path_out);
+                            System.out.println("Size : " + encodedMap.size() + " // Path salt : " + path_out);
                             break;
                         case DEC:
-                            cipher = cryption.decryption(encoded);
+                            cipher = cryption.decryption(encoded, path);
                             break;
                     }
 
@@ -242,7 +250,7 @@ public class Crypto {
                 String extension = getExtension(outputFilePath);
                 System.out.println(extension);
                 if (inputFiles.size() > 1) {
-                    if (!extension.equals("zip")  && !extension.equals("") && Action == action.ENC) {
+                    if (!extension.equals("zip") && !extension.equals("") && Action == action.ENC) {
                         System.out.println("File's extension have to be 'zip' for multiple files!");
                         return false;
                     } else if (!extension.equals("")) {

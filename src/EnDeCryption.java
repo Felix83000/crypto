@@ -14,11 +14,11 @@ public class EnDeCryption {
         this.password = password;
     }
 
-    public byte[] encryption(byte[] data){
+    public byte[] encryption(byte[] data, String name){
         try {
             Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
 
-            Key key = generateKey(this.password);
+            Key key = generateKey(this.password, name);
 
             //System.out.println("key : "+key);
             cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -78,7 +78,7 @@ public class EnDeCryption {
             System.out.println("result : "+Arrays.toString(result));
             System.out.println();
 */
-            return result;
+            return cipherText;
         } catch (Exception ex){
             ex.printStackTrace();
         }
@@ -94,12 +94,11 @@ public class EnDeCryption {
         return result;
     }
 
-    public byte[] decryption(byte[] data, String password) {
+    public byte[] decryption(byte[] data, String name) {
         try {
             Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
 
-            Key key = generateKey(password);
-
+            Key key = generateKey(this.password, name);
             //System.out.println("key : "+key);
             cipher.init(Cipher.DECRYPT_MODE, key);
 
@@ -147,9 +146,10 @@ public class EnDeCryption {
         return null;
     }
 
-    private Key generateKey(String password) {
+    private Key generateKey(String password, String Salt) {
         try {
-            byte[] salt = {0, 0, 0, 0, 0, 0, 0, 0};
+            //byte[] salt = {0, 0, 0, 0, 0, 0, 0, 0};
+            byte[] salt = Salt.getBytes();
             SecretKeyFactory factory =
                     SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
             KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 10000, 128);
